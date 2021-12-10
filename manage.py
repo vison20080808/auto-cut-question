@@ -2,9 +2,11 @@
 Author : hupeng
 Time : 2021/12/9 16:14 
 Description: 
-''' 
+'''
 import json
+import time
 import base64
+import traceback
 
 import cv2
 import numpy as np
@@ -46,8 +48,8 @@ app = Flask(__name__)
 
 @app.before_request
 def before_request():
-    url = request.url
-    args = request.json or request.form or {}
+    # url = request.url
+    # args = request.json or request.form or {}
     requestid = request.headers.get('requestid')
     if not requestid:
         data = {'code': 10000, 'message': 'miss requestid', 'data': {}}
@@ -58,11 +60,12 @@ def before_request():
 
     g.requestid = requestid
     rd.requestid = requestid
+    g.start = time.time()
 
-    try:
-        logger.info('[request] [path: %s] %s' % (request.path, str(args)))
-    except Exception:
-        logger.error("request url: %s, response: message too long" % url)
+    # try:
+    #     logger.info('[request] [path: %s]' % request.path)
+    # except Exception:
+    #     logger.error("request url: %s, response: message too long" % url)
 
 
 @app.after_request
@@ -70,19 +73,21 @@ def after_request(response):
     url = request.url
     resp = response.data.decode()
     try:
+        start = g.start
+        t = '%.3f' % (time.time() - start)
         resp = json.loads(resp)
         if resp['code'] in [10000, 10001]:
             return response
     except Exception:
         pass
     try:
-        logger.info('[response] %s' % str(resp))
+        logger.info(f'[cost {t}] [response] {str(resp)}')
     except Exception:
         logger.error("request url: %s, response: message too long" % url)
     return response
 
 
-@app.route('/predict/ocr_det', methods=['POST'])
+@app.route('/api/detect/question_segment', methods=['POST'])
 def ocr_det():
     response = MyResponse()
     response.code = 0
@@ -98,9 +103,10 @@ def ocr_det():
     except Exception as e:
         response.code = 10001
         response.message = str(e)
+        logger.error(str(traceback.format_exc()))
     # print(response.dict)
     return responser(response)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8966, debug=False)
+    app.run(host='0.0.0.0', port=8977, debug=False)
