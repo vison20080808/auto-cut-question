@@ -9,6 +9,7 @@ import itertools
 import logging
 import time
 import cv2
+
 # fmt: off
 sys.path.insert(1, os.path.join(sys.path[0], '..'))
 # fmt: on
@@ -16,7 +17,6 @@ sys.path.insert(1, os.path.join(sys.path[0], '..'))
 from typing import Any, Dict, List, Set
 
 import torch
-
 
 import detectron2.utils.comm as comm
 
@@ -34,6 +34,7 @@ from dyhead import add_dyhead_config
 from extra import add_extra_config
 from detectron2.utils.visualizer import ColorMode
 
+
 def setup(args):
     """
     Create configs and perform basic setups.
@@ -47,40 +48,43 @@ def setup(args):
     default_setup(cfg, args)
     return cfg
 
+
 class OkayQuesCut():
     def __init__(self):
         parser = default_argument_parser()
-        parser.add_argument("--config",type=str, default="configs/dyhead_swint_atss_fpn_2x_ms.yaml")
-        parser.add_argument("--threshould",type=float, default=0.3)
+        parser.add_argument("--config", type=str, default="configs/dyhead_swint_atss_fpn_2x_ms.yaml")
+        parser.add_argument("--threshould", type=float, default=0.3)
         self.args = parser.parse_args()
         cfg = setup(self.args)
         self.predictor = DefaultPredictor(cfg)
+
     def __call__(self, image: np.ndarray):
-        #输入opencv读取的图片，格式为numpy array
-        #返回 list[list[x1,y1,x2,y2]]
+        # 输入opencv读取的图片，格式为numpy array
+        # 返回 list[list[x1,y1,x2,y2]]
         boxes = []
         outputs = self.predictor(image)
 
         instances = outputs["instances"]
         confident_detections = instances[instances.scores > 0.3]
 
-
-        for i,box in enumerate(confident_detections.pred_boxes.__iter__()):
+        for i, box in enumerate(confident_detections.pred_boxes.__iter__()):
             boxes.append(box.cpu().tolist())
-        #classes = outputs["pred_classes"]
+        # classes = outputs["pred_classes"]
 
-        #print("scores",scores)
-        #print("classes",classes)
-        #return confident_detections
+        # print("scores",scores)
+        # print("classes",classes)
+        # return confident_detections
         return boxes
 
 
+okay_cut = OkayQuesCut()
+
+
 def main():
-    okay_cut = OkayQuesCut()
-    #image = "./test/IMG_20211022_145648.jpg"
+    # image = "./test/IMG_20211022_145648.jpg"
     image = "./test/img_000049.jpg"
     image = cv2.imread(image)
-    outputs =  okay_cut(image)
+    outputs = okay_cut(image)
 
     # v = Visualizer(image[:, :, ::-1],
     #                 metadata=None, 
@@ -90,7 +94,6 @@ def main():
     # v = v.draw_instance_predictions(outputs.to("cpu"))
     # cv2.imwrite("image.jpg",v.get_image()[:, :, ::-1])
 
+
 if __name__ == "__main__":
     main()
-
-    
