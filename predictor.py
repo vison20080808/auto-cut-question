@@ -49,7 +49,8 @@ class OkayQuesCut():
         args = default_argument()
         cfg = setup(args)
         self.predictor = DefaultPredictor(cfg)
-
+        if hasattr(torch.cuda,"set_per_process_memory_fraction"):
+            torch.cuda.set_per_process_memory_fraction(0.3, 0) 
     def __call__(self, image: np.ndarray):
         boxes = []
         outputs = self.predictor(image)
