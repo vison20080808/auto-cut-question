@@ -88,7 +88,7 @@ def after_request(response):
 
 
 @app.route('/api/detect/question_segment', methods=['POST'])
-def ocr_det():
+def question_segment():
     response = MyResponse()
     response.code = 0
     response.message = 'success'
@@ -103,6 +103,7 @@ def ocr_det():
     except Exception as e:
         response.code = 10001
         response.message = str(e)
+        response.data = {'results': [[]]}
         logger.error(str(traceback.format_exc()))
     # print(response.dict)
     return responser(response)
