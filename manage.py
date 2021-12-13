@@ -51,21 +51,16 @@ def before_request():
     # url = request.url
     # args = request.json or request.form or {}
     requestid = request.headers.get('requestid')
+    g.requestid = requestid
+    rd.requestid = requestid
+    g.start = time.time()
+
     if not requestid:
         data = {'code': 10000, 'message': 'miss requestid', 'data': {}}
         return Response(
             response=json.dumps(data, ensure_ascii=False),
             mimetype='application/json'
         )
-
-    g.requestid = requestid
-    rd.requestid = requestid
-    g.start = time.time()
-
-    # try:
-    #     logger.info('[request] [path: %s]' % request.path)
-    # except Exception:
-    #     logger.error("request url: %s, response: message too long" % url)
 
 
 @app.after_request
