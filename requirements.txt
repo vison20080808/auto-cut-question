@@ -1,3 +1,4 @@
+cython==0.29.15
 -e .
 -e detectron2
 fairy-tail==0.1.0
