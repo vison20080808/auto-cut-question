@@ -2,7 +2,8 @@
 Author : hupeng
 Time : 2021/10/12 15:46 
 Description: 
-''' 
+'''
+from gevent import monkey;monkey.patch_all()
 import multiprocessing
 
 # debug = True
