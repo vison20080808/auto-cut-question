@@ -1,7 +1,7 @@
 MODEL:
   META_ARCHITECTURE: "ATSS"
   #WEIGHTS: "pretrained/atss_1_class.pth"
-  WEIGHTS: "/home/public/models/cut_question/model_final.pth"
+  WEIGHTS: "/xdfapp/data/models/cut_question/model_final.pth"
   PIXEL_MEAN: [123.675, 116.28, 103.53]
   PIXEL_STD: [58.395, 57.12, 57.375]
   BACKBONE:
