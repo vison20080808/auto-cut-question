@@ -2,7 +2,7 @@ MODEL:
   META_ARCHITECTURE: "ATSS"
   #WEIGHTS: "pretrained/atss_1_class.pth"
   # WEIGHTS: "/sda/public/auto_cut/dyhead_swint_atss_fpn_2x_ms.pth"
-  WEIGHTS: "../cut_question.pth"
+  WEIGHTS: "./cut_question.pth"
   PIXEL_MEAN: [123.675, 116.28, 103.53]
   PIXEL_STD: [58.395, 57.12, 57.375]
   BACKBONE:
