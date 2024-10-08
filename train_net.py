@@ -172,12 +172,12 @@ class Trainer(DefaultTrainer):
 
 from detectron2.data.datasets import register_coco_instances
 
-register_coco_instances("cut_ques_train", {}, "/home/public/ocr_data/cut_ques/coco/add_more/annotations/instances_train2017.json",\
-     "/home/public/ocr_data/cut_ques/coco/add_more/train2017/")
+register_coco_instances("cut_ques_train", {}, "/sda/public/auto_cut/add_more/annotations/instances_train2017.json",\
+     "/sda/public/auto_cut/add_more/train2017/")
 #register_coco_instances("cut_ques_val", {}, "/home/public/ocr_data/cut_ques/coco/add_more/annotations/instances_test2017.json", \
 #    "/home/public/ocr_data/cut_ques/coco/add_more/test2017/")
-register_coco_instances("cut_ques_val", {}, "../youdao/data/instances_val2017.json", \
-    "/home/public/ocr_data/cut_ques/mp_online_correct2/")
+register_coco_instances("cut_ques_val", {}, "/sda/public/auto_cut/add_more/val_youdao_online/instances_val2017.json", \
+    "/sda/public/auto_cut/add_more/val_youdao_online/mp_online_correct2/")
 #register_coco_instances("cut_ques_val", {}, "time_coco.json", \
 #    "/home/public/yushilin/test_image/")
 def setup(args):

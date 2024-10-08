@@ -14,7 +14,7 @@ from fairy import localconfig
 
 from utils.log import logger_init
 
-LOG_DIR = '/xdfapp/logs/ocrquesseg-svr/'
+LOG_DIR = './logs/ocrquesseg-svr/'
 if not os.path.exists(LOG_DIR):
     os.makedirs(LOG_DIR)
 

@@ -44,18 +44,19 @@ def setup(args):
     return cfg
 
 
-class OkayQuesCut():
+class QuesCut():
     def __init__(self):
         args = default_argument()
         cfg = setup(args)
         self.predictor = DefaultPredictor(cfg)
-        if hasattr(torch.cuda,"set_per_process_memory_fraction"):
-            torch.cuda.set_per_process_memory_fraction(0.3, 0) 
+        # if hasattr(torch.cuda,"set_per_process_memory_fraction"):
+        #     torch.cuda.set_per_process_memory_fraction(0.3, 0) 
     def __call__(self, image: np.ndarray):
         boxes = []
         outputs = self.predictor(image)
         instances = outputs["instances"]
         confident_detections = instances[instances.scores > 0.3]
+        print(f"confident_detections={confident_detections}")
 
         for box in confident_detections.pred_boxes.__iter__():
             # boxes.append([int(i) for i in box.cpu().tolist()])
@@ -70,14 +71,41 @@ class OkayQuesCut():
         return boxes
 
 
-okay_cut = OkayQuesCut()
+question_cut = QuesCut()
 
+
+def draw_boxes(image, boxes):
+    for box in boxes:
+        # Extract the coordinates from the box dictionary
+        left = box['left']
+        top = box['top']
+        right = box['right']
+        bottom = box['bottom']
+        
+        # Draw a rectangle on the image
+        cv2.rectangle(image, (left, top), (right, bottom), (0, 255, 0), 2)  # Draw a green rectangle
+    return image
 
 def main():
-    image = "./test/IMG_20211022_145648.jpg"
+    # print("dddddddddddddddddddddddd")
+    # image = "./test/IMG_20211022_145648.jpg"
+    image = "./test/04.png"
     image = cv2.imread(image)
-    outputs = okay_cut(image)
+    outputs = question_cut(image)
     print(outputs)
+
+    # Draw boxes on the image
+    image_with_boxes = draw_boxes(image, outputs)
+    
+    # Create a resizable window
+    cv2.namedWindow("Image with Boxes", cv2.WINDOW_NORMAL)
+    
+    # Display the image in a window
+    cv2.imshow("Image with Boxes", image_with_boxes)
+    
+    # Wait for a key press and close the displayed image
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
 
 if __name__ == "__main__":

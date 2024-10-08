@@ -16,6 +16,7 @@ from fairy.utils import MyResponse, responser
 from utils.log import rd, get_logger
 import settings
 from predictor import okay_cut
+from PIL import Image
 
 logger = get_logger()
 
@@ -42,6 +43,12 @@ def cut_question(image):
     result = cut_func(image)
     return result
 
+def cut_question_stream(img_stream):
+    img = Image.open(img_stream)
+    image = cv2.cvtColor(np.asarray(img), cv2.COLOR_RGB2BGR)
+    result = okay_cut(image)
+    return result
+
 
 app = Flask(__name__)
 
@@ -50,17 +57,17 @@ app = Flask(__name__)
 def before_request():
     # url = request.url
     # args = request.json or request.form or {}
-    requestid = request.headers.get('requestid')
-    g.requestid = requestid
-    rd.requestid = requestid
+    # requestid = request.headers.get('requestid')
+    # g.requestid = requestid
+    # rd.requestid = requestid
     g.start = time.time()
 
-    if not requestid:
-        data = {'code': 10000, 'message': 'miss requestid', 'data': {}}
-        return Response(
-            response=json.dumps(data, ensure_ascii=False),
-            mimetype='application/json'
-        )
+    # if not requestid:
+    #     data = {'code': 10000, 'message': 'miss requestid', 'data': {}}
+    #     return Response(
+    #         response=json.dumps(data, ensure_ascii=False),
+    #         mimetype='application/json'
+    #     )
 
 
 @app.after_request
@@ -81,6 +88,25 @@ def after_request(response):
         logger.error("request url: %s, response: message too long" % url)
     return response
 
+
+@app.route('/api/detect/question_segment_file', methods=['POST'])
+def question_segment_file():
+    response = MyResponse()
+    response.code = 0
+    response.message = 'success'
+    try:
+        args = request.files.get('file', '')
+        result = []
+        res = cut_question_stream(args.stream)
+        result.append(res)
+        response.data = {'results': result}
+    except Exception as e:
+        response.code = 10001
+        response.message = str(e)
+        response.data = {'results': [[]]}
+        logger.error(str(traceback.format_exc()))
+    # print(response.dict)
+    return responser(response)
 
 @app.route('/api/detect/question_segment', methods=['POST'])
 def question_segment():
@@ -105,4 +131,4 @@ def question_segment():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8977, debug=False)
+    app.run(host='0.0.0.0', port=7777, debug=False)
